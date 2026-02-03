@@ -1,0 +1,371 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>邀请函</title>
+  <style>
+    :root {
+      --ink: #1f2937;
+      --accent: #1e3a8a;
+      --paper: #f4f6fb;
+      --shadow: rgba(15, 23, 42, 0.18);
+    }
+
+    @page {
+      size: A4 portrait;
+      margin: 12mm;
+    }
+
+    * { box-sizing: border-box; }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      margin: 0;
+      padding: 0;
+      background: #dde3ec;
+      color: var(--ink);
+      font-family: "Noto Serif SC", "Source Serif 4", "Times New Roman", serif;
+    }
+
+    body {
+      display: grid;
+      place-items: center;
+      padding: 18px;
+    }
+
+    .page {
+      width: 210mm;
+      height: 297mm;
+      background: var(--paper);
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 12px 32px var(--shadow);
+      opacity: 0;
+      transform: scale(0.985);
+      transition: opacity 520ms ease, transform 520ms ease;
+    }
+
+    .page::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(180deg, rgba(255,255,255,0.78), rgba(255,255,255,0.94)),
+        url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='900' height='1300' viewBox='0 0 900 1300'><rect width='900' height='1300' fill='%23f4f6fb'/><g fill='none' stroke='%23c7d2fe' stroke-width='1.2' opacity='0.55'><path d='M60 140h780'/><path d='M60 260h780'/><path d='M60 380h780'/><path d='M60 500h780'/><path d='M60 620h780'/><path d='M60 740h780'/><path d='M60 860h780'/><path d='M60 980h780'/><path d='M60 1100h780'/></g><g fill='%231e3a8a' opacity='0.06'><circle cx='120' cy='160' r='46'/><circle cx='770' cy='260' r='62'/><circle cx='160' cy='1040' r='54'/><circle cx='760' cy='1080' r='58'/></g></svg>");
+      background-size: cover;
+      background-position: center;
+      z-index: 0;
+    }
+
+    .frame {
+      position: absolute;
+      inset: 16mm;
+      border: 2px solid rgba(30, 58, 138, 0.28);
+      z-index: 1;
+    }
+
+
+    .content {
+      position: relative;
+      z-index: 2;
+      padding: 22mm 26mm 24mm;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 10mm;
+    }
+
+    .title {
+      text-align: center;
+      letter-spacing: 0.22em;
+      font-size: 30px;
+      color: var(--accent);
+    }
+
+    .title::after {
+      content: "";
+      display: block;
+      width: 120px;
+      height: 2px;
+      margin: 10px auto 0;
+      background: linear-gradient(90deg, transparent, rgba(30, 58, 138, 0.45), transparent);
+    }
+
+    .subtitle {
+      text-align: center;
+      font-size: 16px;
+      color: #475569;
+    }
+
+    .section {
+      font-size: 15px;
+      line-height: 1.75;
+    }
+
+    .section strong {
+      color: var(--accent);
+      font-weight: 600;
+    }
+
+    .schedule {
+      margin-top: 6mm;
+      border-top: 1px solid rgba(30, 58, 138, 0.25);
+      padding-top: 6mm;
+      display: grid;
+      gap: 10mm;
+      font-size: 14.5px;
+      line-height: 1.7;
+    }
+
+    .schedule-item {
+      padding: 6px 8px;
+      background: rgba(255, 255, 255, 0.82);
+      border-left: 4px solid rgba(30, 58, 138, 0.45);
+    }
+
+    .footer {
+      margin-top: auto;
+      text-align: center;
+      font-size: 15px;
+      line-height: 1.75;
+    }
+
+    .signature {
+      margin-top: 10mm;
+      text-align: right;
+      font-size: 15px;
+      color: #475569;
+    }
+
+    .overlay {
+      position: fixed;
+      inset: 0;
+      display: grid;
+      place-items: center;
+      background: radial-gradient(circle at center, #f1f5ff 0%, #e2e8f0 58%, #cbd5e1 100%);
+      z-index: 10;
+      transition: opacity 420ms ease;
+    }
+
+    .overlay.hidden {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .envelope {
+      width: 380px;
+      height: 250px;
+      position: relative;
+      cursor: pointer;
+      transform: translateY(0);
+      transition: transform 420ms ease;
+      filter: drop-shadow(0 14px 24px rgba(0,0,0,0.22));
+    }
+
+    .envelope:hover {
+      transform: translateY(-6px);
+    }
+
+    .envelope .back {
+      position: absolute;
+      inset: 0;
+      background: #e9edf6;
+      border: 2px solid #94a3b8;
+      border-radius: 6px;
+    }
+
+    .envelope .front {
+      position: absolute;
+      inset: 0;
+      background: #f8fafc;
+      clip-path: polygon(0 0, 50% 56%, 100% 0, 100% 100%, 0 100%);
+      border: 2px solid #94a3b8;
+      border-top: none;
+      border-radius: 0 0 6px 6px;
+    }
+
+    .envelope .flap {
+      position: absolute;
+      inset: 0;
+      background: #dde4ef;
+      clip-path: polygon(0 0, 50% 56%, 100% 0, 100% 0, 0 0);
+      border: 2px solid #94a3b8;
+      border-bottom: none;
+      border-radius: 6px 6px 0 0;
+      transform-origin: top center;
+      transform: rotateX(0deg);
+      transition: transform 520ms ease;
+    }
+
+    .envelope .seal {
+      position: absolute;
+      left: 50%;
+      top: 56%;
+      transform: translate(-50%, -50%);
+      width: 54px;
+      height: 54px;
+      background: #1e3a8a;
+      border-radius: 999px;
+      box-shadow: inset 0 0 0 4px rgba(255,255,255,0.25);
+    }
+
+    .envelope .seal::after {
+      content: "请启";
+      position: absolute;
+      inset: 0;
+      display: grid;
+      place-items: center;
+      color: #e2e8f0;
+      font-size: 14px;
+      letter-spacing: 0.1em;
+    }
+
+    .envelope .stamp {
+      position: absolute;
+      right: 18px;
+      bottom: 22px;
+      width: 62px;
+      height: 46px;
+      border: 1px solid rgba(148, 163, 184, 0.7);
+      border-radius: 6px;
+      background-image: url("1.jpg");
+      background-size: cover;
+      background-position: center;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+    }
+
+    .envelope .label {
+      position: absolute;
+      left: 22px;
+      bottom: 26px;
+      color: #334155;
+      font-size: 14px;
+      letter-spacing: 0.06em;
+    }
+
+    .envelope .sender {
+      position: absolute;
+      right: 22px;
+      top: 26px;
+      color: #334155;
+      font-size: 12.5px;
+      letter-spacing: 0.08em;
+    }
+
+    .overlay .hint {
+      margin-top: 22px;
+      text-align: center;
+      color: #475569;
+      font-size: 14px;
+      letter-spacing: 0.1em;
+    }
+
+    .overlay.opening .envelope .flap {
+      transform: rotateX(58deg);
+    }
+
+    .overlay.opening .envelope {
+      transform: translateY(-10px) scale(0.98);
+    }
+
+    .page.revealed {
+      opacity: 1;
+      transform: scale(1);
+    }
+
+    @media print {
+      body {
+        background: white;
+        padding: 0;
+      }
+      .page {
+        box-shadow: none;
+        opacity: 1;
+        transform: none;
+      }
+      .overlay {
+        display: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="overlay" id="overlay" role="button" aria-label="打开邀请函">
+    <div>
+      <div class="envelope" id="envelope">
+        <div class="back"></div>
+        <div class="flap"></div>
+        <div class="front"></div>
+        <div class="seal"></div>
+        <div class="stamp" aria-hidden="true"></div>
+        <div class="label">For 康老师</div>
+        <div class="sender">邀请方：知春预备研究员</div>
+      </div>
+    </div>
+  </div>
+  <main class="page">
+    <div class="frame" aria-hidden="true"></div>
+    <section class="content">
+      <div>
+        <div class="title">邀请函</div>
+        <div class="subtitle">致 康老师</div>
+      </div>
+
+      <div class="section">
+        尊敬的康老师：
+        <br />
+        感谢您在百忙之中抽身关注我们的活动。若您能莅临，将是对我们的支持，也会成为对预备研究员的鼓励与肯定。我们由衷期待与您共度一个轻松愉快、充满交流与欢笑的下午与夜晚，也希望这段时光能为您带来片刻放松与美好回忆。
+      </div>
+
+      <div class="section">
+        <strong>特别声明：</strong>
+        本次活动纯粹出于让老师们更加放松、收获乐趣的初衷，
+        不会含有让老师们紧张或尴尬的场面。我们会尽可能营造轻松、友好、温暖的氛围，
+        以便老师们可以自在交流、从容参与，请您放心参加。
+      </div>
+
+      <div class="section">
+        <strong>活动具体安排：</strong>
+        <div class="schedule">
+          <div class="schedule-item">15:00 - 16:00 伽利略：为老师们准备桌游活动。老师可选择与同学们一起参与，也可根据个人节奏自由安排。该环节以轻松互动为主，旨在增进交流与轻度社交。</div>
+          <div class="schedule-item">16:00 - 17:00 密室活动，16:00 在图灵集合。过程中安排引导与协助，重点在于团队协作与趣味体验。</div>
+          <div class="schedule-item">17:00 - 18:30 图灵：丰富的晚宴。为便于交流与休息，现场将预留充足的用餐与聊天时间。</div>
+          <div class="schedule-item">18:30 - 21:00 图灵：首届知春晚。内容以节目展示与互动分享为主，氛围轻松愉快。</div>
+        </div>
+      </div>
+
+      <div class="footer">
+        再次诚挚感谢老师的到来，您的支持对我们意义重大。期待与您相见，愿这场活动为您留下温暖而愉快的回忆。
+      </div>
+
+      <div class="signature">
+        —— 知春全体预备研究员 敬上
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const overlay = document.getElementById("overlay");
+    const page = document.querySelector(".page");
+
+    const reveal = () => {
+      overlay.classList.add("opening");
+      setTimeout(() => {
+        overlay.classList.add("hidden");
+        page.classList.add("revealed");
+      }, 380);
+    };
+
+    overlay.addEventListener("click", reveal);
+
+    // Fallback: if overlay is skipped, ensure page is visible
+    setTimeout(() => {
+      if (!page.classList.contains("revealed")) {
+        page.classList.add("revealed");
+      }
+    }, 4000);
+  </script>
+</body>
+</html>
